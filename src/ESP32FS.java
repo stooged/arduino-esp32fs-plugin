@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import javax.swing.JOptionPane;
+import java.util.prefs.*;
 
 import processing.app.PreferencesData;
 import processing.app.Editor;
@@ -90,6 +91,7 @@ public class ESP32FS implements Tool {
   }
   
   private String typefs = "";
+  Preferences prefs = Preferences.userNodeForPackage(getClass());
 
   private int listenOnProcess(String[] arguments){
       try {
@@ -579,8 +581,9 @@ public class ESP32FS implements Tool {
                                               JOptionPane.PLAIN_MESSAGE,
                                               null,
                                               options,
-                                              "SPIFFS");
+                                              prefs.get("SELECTED", "SPIFFS"));
     if ((typefs != null) && (typefs.length() > 0)) {
+      prefs.put("SELECTED", typefs);
         if (typefs == "!Erase Flash!") {
             eraseFlash();
         } else {
