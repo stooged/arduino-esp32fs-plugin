@@ -322,9 +322,17 @@ public class ESP32FS implements Tool {
       if (!tool.exists()) {
         tool = new File(PreferencesData.get("runtime.tools.mk" + typefs.toLowerCase() + ".path"), mkspiffsCmd);
         if (!tool.exists()) {
-            System.err.println();
-            editor.statusError(typefs + " Error: mk" + typefs.toLowerCase() + "not found!");
-            return;
+			String[] spl1;
+			String path = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+			path = path.replace("\\","/");
+			spl1 = path.split("/");
+			path = path.replace(spl1[spl1.length - 1],"");
+			tool = new File(path + mkspiffsCmd.replace(".exe",""), mkspiffsCmd);
+			if (!tool.exists()) {
+                System.err.println();
+                editor.statusError(typefs + " Error: " + mkspiffsCmd + " not found!");
+                return;
+			}
         }
       }
     }
@@ -563,7 +571,7 @@ public class ESP32FS implements Tool {
 
   public void run() {
 	String sketchName = editor.getSketch().getName();
-    Object[] options = { "LittleFS", "SPIFFS", "FatFS", "!Erase Flash!" };
+    Object[] options = { "SPIFFS", "FatFS", "LittleFS", "!Erase Flash!" };
     typefs = (String)JOptionPane.showInputDialog(editor,
                                               "Select FS for " + sketchName +
                                               " /data folder",
@@ -571,7 +579,7 @@ public class ESP32FS implements Tool {
                                               JOptionPane.PLAIN_MESSAGE,
                                               null,
                                               options,
-                                              "LittleFS");
+                                              "SPIFFS");
     if ((typefs != null) && (typefs.length() > 0)) {
         if (typefs == "!Erase Flash!") {
             eraseFlash();
